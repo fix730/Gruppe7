@@ -18,9 +18,54 @@ void input(int *direction, _Bool *gameOver); // Bestimmt die Spielereingabe für
 void backgroundProcess(int (*posTail)[2], int (*posFruit)[2], int direction, int *tailLength, _Bool *gameOver, int *score);// Hintergrundprozesse wie Bewegung der Schlange, prüft Kollisionen, verwaltet das Spielfeld und aktualisiert die Anzeige.
 void startScreen(); // Gibt Spielinformation wieder, von informationGame() genutzt um einen Tutorialbilschirm darzustellen
 void informationGame(); // Gibt Spielinformation wieder ( Tutorialbilschirm)
-void endScreen(int score); //Bildschirmausgabe wenn das Spiel vorbei ist (nicht gewonnen)
-void winScreen(int score); //Bildschirmausgabe wenn das Spiel vorbei ist (gewonnen)
+void endScreen(int score, int highScore); //Bildschirmausgabe wenn das Spiel vorbei ist (nicht gewonnen)
+void highScoreScreen(int score);
 int compareScore(int score); //Speichert aktuellen Score und vergleicht mit Highscore
+int getHighestScore(int* scores, int count); //Sucht den größten Wert im Array
+
+int getHighestScore(int* scores, int count){
+	int max = scores[0];
+	for(int i=0; i<count;i++){
+		if(max<scores[i]){
+			max = scores[i];
+		}
+	}
+	return max;
+}
+// Speichert den aktuellen Score und gibt den Highscore zurück
+int compareScore(int score){
+    FILE *fp;
+	int countNumber=0;
+	int count =0;
+	int *allScores;
+	int highScore =0;
+	char c;
+    fp = fopen("test.txt","a+");
+    if(fp == NULL){
+        return -1;
+    }
+    fprintf(fp,"%d\n",score);
+	fseek(fp,0,SEEK_SET); //Auf den Anfang des Dokuments Springen
+
+	//Scores einlesen aus dem Dokument
+	allScores = (int*) malloc(sizeof(int)); 
+	if(allScores==NULL){
+		return -1;
+	}
+	while (fscanf(fp,"%d",&allScores[count])==1){
+		//printf("%d\n",allScores[count]);
+		count++;
+		int *tmp = (int*) realloc((void*)allScores,(count+1)*sizeof(int));
+		if(allScores==NULL){
+			return -1;
+		}
+		allScores = tmp;
+	}
+	
+	highScore = getHighestScore(allScores, count);
+	free(allScores);
+	return highScore;
+}
 
 //Setzt den Konsolencursor an die Position (x, y).
 void gotoxy(short x, short y) {
@@ -245,11 +290,13 @@ void informationGame(){
 }
 
 // Funktion wenn das Spiel vorbei ist (nicht gewonnen)
-void endScreen(int score){
+void endScreen(int score, int highScore){
     gotoxy(5,5);
     printf("Game Over!");
     gotoxy(5,7);
     printf("Your Score: %d", score);
+    gotoxy(5,8);
+    printf("Your Highscore: %d", highScore);
     gotoxy(5,10);
     printf("Thanks for playing our Snake Game!");
     gotoxy(0,25);
@@ -260,16 +307,17 @@ void endScreen(int score){
     */
 }
 
-// Gibt Infoscreen/Tutorial aus
-void winScreen(int score){
+void highScoreScreen(int score){
     gotoxy(5,5);
-    printf("You WIN!");
+    printf("New Highscore!");
     gotoxy(5,7);
     printf("Your Score: %d", score);
     gotoxy(5,10);
     printf("Thanks for playing our Snake Game!t");
     gotoxy(0,25);
 }
+
+
 
 // main Funktion 
 int main() {
@@ -302,12 +350,13 @@ int main() {
         } else {
             Sleep(200);
         }
-        if (score >= 1155) {
-            gameOver = 1;
-            winScreen(score);
-        }
     }
-    endScreen(score);
+    int highscore = compareScore(score);
+    if(highscore == score){
+        highScoreScreen(score);
+    }else{
+        endScreen(score,highscore);
+    }
     system("Pause");
     return 0;
 }
