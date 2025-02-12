@@ -40,7 +40,7 @@ int compareScore(int score){
 	int *allScores;
 	int highScore =0;
 	char c;
-    fp = fopen("test.txt","a+");
+    fp = fopen("snakeScores.txt","a+");
     if(fp == NULL){
         return -1;
     }
