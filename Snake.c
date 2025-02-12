@@ -296,15 +296,17 @@ void endScreen(int score, int highScore){
     gotoxy(5,7);
     printf("Your Score: %d", score);
     gotoxy(5,8);
-    printf("Your Highscore: %d", highScore);
+    if(score==-1){
+        printf("Error by writing textdokument");
+    }else{
+        printf("Your Highscore: %d", highScore);
+    }
     gotoxy(5,10);
     printf("Thanks for playing our Snake Game!");
     gotoxy(0,25);
-    /*
-    if (_getch()) { //Wait for any key input
+    if (_getch()) { //Wenn irgendeine Taste gedrückt wieder Neustart des Programm
         main();
     }
-    */
 }
 
 void highScoreScreen(int score){
@@ -315,6 +317,9 @@ void highScoreScreen(int score){
     gotoxy(5,10);
     printf("Thanks for playing our Snake Game!t");
     gotoxy(0,25);
+    if (_getch()) { //Wenn irgendeine Taste gedrückt wieder Neustart des Programm
+        main();
+    }
 }
 
 
@@ -327,7 +332,8 @@ int main() {
     int tailLength;
     int direction = 0;
     _Bool gameOver = 0;
-
+    int speed = 200;
+    int speedScoreCompare = 20;
     srand(time(NULL)); 
     informationGame(); 
     gameField(score); 
@@ -339,17 +345,14 @@ int main() {
         if(direction != 0){
             backgroundProcess(posTail, posFruit, direction, &tailLength, &gameOver, &score);
         }
-        if (score > 50) {
-            Sleep(150);
-        } else if (score > 100) {
-            Sleep(125);
-        } else if (score > 150) {
-            Sleep(115);
-        } else if (score > 200) {
-            Sleep(105);
-        } else {
-            Sleep(200);
+        
+        //Geschwindigkeit bei höherer Geschwindigkeit verlangsamen
+        if(score == speedScoreCompare){
+            //Speed wird bei jedem 2. Fruch um 25% schneller
+            speedScoreCompare += 20;
+            speed = speed * 0.75;
         }
+        Sleep(speed);
     }
     int highscore = compareScore(score);
     if(highscore == score){
