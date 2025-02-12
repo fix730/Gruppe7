@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include <time.h>
-
+#include <stdlib.h>
 
 // Spielfeldgrößen
 #define WIDTH 60
@@ -69,9 +69,9 @@ int compareScore(int score){
 
 //Setzt den Konsolencursor an die Position (x, y).
 void gotoxy(short x, short y) {
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD position = { x, y };
-    SetConsoleCursorPosition(hStdout, position);
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); //Holt Referenz der Konsole
+    COORD position = { x, y }; //Coodiert die Position
+    SetConsoleCursorPosition(hStdout, position); //Setzt den Kurser auf die Position
 }
 
 // Zeichnet das Spielfeld auf
@@ -334,8 +334,8 @@ int main() {
     _Bool gameOver = 0;
     int speed = 200;
     int speedScoreCompare = 20;
-    srand(time(NULL)); 
-    informationGame(); 
+    srand(time(NULL)); //Zufallszahlen nachher zu erstellen
+    informationGame(); //Info-Screen
     gameField(score); 
     setup(&score, &tailLength, posTail, posFruit); 
     
